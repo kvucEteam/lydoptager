@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<!-- 
+	DOKUMENTATION - KVUC 26-02-2018
+	===============================
+
+	Alt funktionalitet til denne recorder er "lånt" fra "audio recorder" af Matt Diamond:
+	https://webaudiodemos.appspot.com/AudioRecorder/index.html
+
+	Recorderen er tweaket, så den "ligner": 
+	https://elearning.kvuc.dk/_flex/flashaudiorec.html
+
+	NOTE:
+	=====
+	Orginal programmet "audio recorder" af Matt Diamond er "scrapet" fra websitet og ligger i mappen "orginal_audio_recorder".
+
+-->
+<head>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Lydoptager</title>
+	<link rel="stylesheet" href="../library/css/styles.css" type="text/css" />
+	<link rel="stylesheet" href="css/audio_recorder.css" type="text/css"/>
+</head>
+<body>
+	<div class="container-fluid">
+		<div id="controls">
+			<span id="record" class="btn btn-lg btn-info" onclick="toggleRecording(this);">optag <span class="glyphicons glyphicons-microphone"></span></span>
+			<a id="save" class="btn btn-lg btn-info" href="#">gem <span class="glyphicons glyphicons-download-alt"></span> </a>
+
+			<span id="record" class="btn btn-lg btn-info" onclick="play();">afspil <span class="glyphicons glyphicons-microphone"></span></span>
+		</div>
+		<div class="Clear"></div>
+		<div id="showVizuals_toggle">
+			<div>
+				<span id="showVizuals">Vis mere info <span class="glyphicon glyphicon-chevron-right"></span></span>
+			</div>
+			<div id="viz">
+				<div id="analyser_container">
+					<div class="vizHeader">Lyd input</div>
+					<canvas id="analyser" width="1024" height="500"></canvas>
+				</div>
+				<div id="wavedisplay_container">
+					<div class="vizHeader">Optagelse</div>
+					<canvas id="wavedisplay" width="1024" height="500"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="../library/vendor_scripts.js"></script>
+    <script src="../library/custom_scripts.js"></script>
+	<script src="js/audiodisplay.js"></script>
+	<script src="js/recorderjs/recorder.js"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>
