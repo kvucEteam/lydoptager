@@ -1,4 +1,5 @@
 function drawBuffer( width, height, context, data ) {
+    console.log('drawBuffer - CALLED');
     var step = Math.ceil( data.length / width );
     var amp = height / 2;
     context.fillStyle = "silver";

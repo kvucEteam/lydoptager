@@ -22,7 +22,10 @@ var recLength = 0,
   recBuffersR = [],
   sampleRate;
 
+soundBlob = null;
+
 this.onmessage = function(e){
+  console.log('onmessage - CALLED');
   switch(e.data.command){
     case 'init':
       init(e.data.config);
@@ -46,11 +49,13 @@ this.onmessage = function(e){
 };
 
 function init(config){
+  console.log('init - CALLED');
   sampleRate = config.sampleRate;
   console.log('audioRecorder - sampleRate: ' + sampleRate);
 }
 
 function record(inputBuffer){
+  console.log('record - CALLED');
   recBuffersL.push(inputBuffer[0]);
   recBuffersR.push(inputBuffer[1]);
   recLength += inputBuffer[0].length;
@@ -58,16 +63,44 @@ function record(inputBuffer){
 }
 
 function exportWAV(type){
+  console.log('exportWAV - CALLED');
   var bufferL = mergeBuffers(recBuffersL, recLength);
   var bufferR = mergeBuffers(recBuffersR, recLength);
   var interleaved = interleave(bufferL, bufferR);
   var dataview = encodeWAV(interleaved);
   var audioBlob = new Blob([dataview], { type: type });
 
+  // ===================   Added by THAN  ===================
+  // From: "Javascript creativity"
+  console.log('exportWAV - typeof(audioBlob): ' + typeof(audioBlob));
+  console.log('exportWAV - audioBlob: ' + JSON.stringify(audioBlob));
+  // var object =  {
+  //     // file: window.URL.createObjectURL(audioBlob),
+  //     file: URL.createObjectURL(audioBlob)
+  //     // size: recordEnd - recordStart
+  // }
+  // localStorage[name] = JSON.stringify(object);
+  // localStorage.setItem("lydTest", JSON.stringify(audioBlob));
+  soundBlob = JSON.stringify(audioBlob);
+  console.log('exportWAV - soundBlob: ' + JSON.stringify(soundBlob));
+  // ========================================================
+
   this.postMessage(audioBlob);
 }
 
+// ===================   Added by THAN  ===================
+// From: "Javascript creativity"
+function playAudio()  {
+    console.log('playAudio - CALLED');
+    // var audio = new Audio(JSON.parse(localStorage.getItem("lydTest")));
+    var audio = new Audio(JSON.parse(soundBlob));
+    audio.play();
+}
+// ========================================================
+
+
 function exportMonoWAV(type){
+  console.log('exportMonoWAV - CALLED');
   var bufferL = mergeBuffers(recBuffersL, recLength);
   var dataview = encodeWAV(bufferL, true);
   var audioBlob = new Blob([dataview], { type: type });
@@ -76,6 +109,7 @@ function exportMonoWAV(type){
 }
 
 function getBuffers() {
+  console.log('getBuffers - CALLED');
   var buffers = [];
   buffers.push( mergeBuffers(recBuffersL, recLength) );
   buffers.push( mergeBuffers(recBuffersR, recLength) );
@@ -83,12 +117,14 @@ function getBuffers() {
 }
 
 function clear(){
+  console.log('clear - CALLED');
   recLength = 0;
   recBuffersL = [];
   recBuffersR = [];
 }
 
 function mergeBuffers(recBuffers, recLength){
+  console.log('mergeBuffers - CALLED');
   var result = new Float32Array(recLength);
   var offset = 0;
   for (var i = 0; i < recBuffers.length; i++){
@@ -99,6 +135,7 @@ function mergeBuffers(recBuffers, recLength){
 }
 
 function interleave(inputL, inputR){
+  console.log('interleave - CALLED');
   var length = inputL.length + inputR.length;
   var result = new Float32Array(length);
 
@@ -114,6 +151,7 @@ function interleave(inputL, inputR){
 }
 
 function floatTo16BitPCM(output, offset, input){
+  console.log('floatTo16BitPCM - CALLED');
   for (var i = 0; i < input.length; i++, offset+=2){
     var s = Math.max(-1, Math.min(1, input[i]));
     output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
@@ -121,12 +159,14 @@ function floatTo16BitPCM(output, offset, input){
 }
 
 function writeString(view, offset, string){
+  console.log('writeString - CALLED');
   for (var i = 0; i < string.length; i++){
     view.setUint8(offset + i, string.charCodeAt(i));
   }
 }
 
 function encodeWAV(samples, mono){
+  console.log('encodeWAV - CALLED');
   var buffer = new ArrayBuffer(44 + samples.length * 2);
   var view = new DataView(buffer);
 

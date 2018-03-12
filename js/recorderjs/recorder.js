@@ -17,6 +17,8 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 DEALINGS IN THE SOFTWARE.
 */
 
+var testBlob = null;
+
 (function(window){
 
   var WORKER_PATH = 'js/recorderjs/recorderWorker.js';
@@ -42,6 +44,7 @@ DEALINGS IN THE SOFTWARE.
       currCallback;
 
     this.node.onaudioprocess = function(e){
+      // console.log('.node.onaudioprocess - CALLED');
       if (!recording) return;
       worker.postMessage({
         command: 'record',
@@ -53,6 +56,7 @@ DEALINGS IN THE SOFTWARE.
     }
 
     this.configure = function(cfg){
+      console.log('.configure - CALLED');
       for (var prop in cfg){
         if (cfg.hasOwnProperty(prop)){
           config[prop] = cfg[prop];
@@ -61,25 +65,33 @@ DEALINGS IN THE SOFTWARE.
     }
 
     this.record = function(){
+      console.log('.record - CALLED');
       recording = true;
     }
 
     this.stop = function(){
+      console.log('.stop - CALLED');
       recording = false;
     }
 
     this.clear = function(){
+      console.log('.clear - CALLED');
       worker.postMessage({ command: 'clear' });
     }
 
     this.getBuffers = function(cb) {
+      console.log('getBuffers - CALLED');
       currCallback = cb || config.callback;
       worker.postMessage({ command: 'getBuffers' })
     }
 
     this.exportWAV = function(cb, type){
+      console.log('.exportWAV - CALLED');
       currCallback = cb || config.callback;
-      type = type || config.type || 'audio/wav';
+      type = type || config.type || 'audio/wav';   // audio/mp3
+      // type = type || config.type || 'audio/mpeg';
+      // type = 'audio/mpeg';
+      // type = 'audio/mp3';
       if (!currCallback) throw new Error('Callback not set');
       worker.postMessage({
         command: 'exportWAV',
@@ -88,8 +100,12 @@ DEALINGS IN THE SOFTWARE.
     }
 
     this.exportMonoWAV = function(cb, type){
+      console.log('.exportMonoWAV - CALLED');
       currCallback = cb || config.callback;
-      type = type || config.type || 'audio/wav';
+      type = type || config.type || 'audio/wav';   // audio/mp3
+      // type = type || config.type || 'audio/mpeg'; 
+      // type = 'audio/mpeg';
+      // type = 'audio/mp3';
       if (!currCallback) throw new Error('Callback not set');
       worker.postMessage({
         command: 'exportMonoWAV',
@@ -98,8 +114,12 @@ DEALINGS IN THE SOFTWARE.
     }
 
     worker.onmessage = function(e){
+      console.log('worker.onmessage - CALLED');
       var blob = e.data;
       currCallback(blob);
+
+      // console.log('worker.onmessage - blob: ' + JSON.stringify(blob));  //   <--------------------  VIGTIGT: DENNE RUMMER BLOB DATA!!!
+      testBlob = JSON.parse(JSON.stringify(blob));
     }
 
     source.connect(this.node);
@@ -107,10 +127,15 @@ DEALINGS IN THE SOFTWARE.
   };
 
   Recorder.setupDownload = function(blob, filename){
+    console.log('Recorder.setupDownload - CALLED');
+    console.log('Recorder.setupDownload - typeof(blob): ' + typeof(blob));
+    console.log('Recorder.setupDownload - blob: ' + JSON.stringify(blob));
     var url = (window.URL || window.webkitURL).createObjectURL(blob);
     var link = document.getElementById("save");
     link.href = url;
     link.download = filename || 'output.wav';
+    var link2 = document.getElementById("play");  // Added by THAN
+    link2.src = url;                              // Added by THAN
   }
 
   window.Recorder = Recorder;

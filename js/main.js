@@ -32,12 +32,31 @@ var recIndex = 0;
 */
 
 function saveAudio() {
-    audioRecorder.exportWAV( doneEncoding );
+    console.log('saveAudio - CALLED');
+    audioRecorder.exportWAV( doneEncoding );       // COMMENTED OUT BY THAN
     // could get mono instead by saying
     // audioRecorder.exportMonoWAV( doneEncoding );
+
+
+
+    // // See: https://stackoverflow.com/questions/32138865/how-to-record-audio-in-format-of-mp3-m4a-javascript-recorder-js
+    // audioRecorder.exportWAV(function (blob) {
+    //     callback(blob);
+
+    //     // create WAV download link using audio data blob
+    //     // createDownloadLink();
+
+    //     // Clear the Recorder to start again !
+    //     recorder.clear();
+    // }, "audio/mp3");   
+
+    // "audio/mpeg"
+
+
 }
 
 function gotBuffers( buffers ) {
+    console.log('gotBuffers - CALLED');
     var canvas = document.getElementById( "wavedisplay" );
 
     drawBuffer( canvas.width, canvas.height, canvas.getContext('2d'), buffers[0] );
@@ -48,11 +67,16 @@ function gotBuffers( buffers ) {
 }
 
 function doneEncoding( blob ) {
+    console.log('doneEncoding - CALLED');
     Recorder.setupDownload( blob, "myRecording" + ((recIndex<10)?"0":"") + recIndex + ".wav" );
+    // Recorder.setupDownload( blob, "myRecording" + ((recIndex<10)?"0":"") + recIndex + ".mp3" );
     recIndex++;
+
+    console.log('doneEncoding - blob: ' + JSON.stringify(blob));
 }
 
 function toggleRecording( e ) {
+    console.log('toggleRecording - CALLED');
     if (e.classList.contains("recording")) {
         // stop recording
         audioRecorder.stop();
@@ -71,6 +95,7 @@ function toggleRecording( e ) {
 }
 
 function convertToMono( input ) {
+    console.log('convertToMono - CALLED');
     var splitter = audioContext.createChannelSplitter(2);
     var merger = audioContext.createChannelMerger(2);
 
@@ -81,11 +106,13 @@ function convertToMono( input ) {
 }
 
 function cancelAnalyserUpdates() {
+    console.log('cancelAnalyserUpdates - CALLED');
     window.cancelAnimationFrame( rafID );
     rafID = null;
 }
 
 function updateAnalysers(time) {
+    // console.log('updateAnalysers - CALLED');
     if (!analyserContext) {
         var canvas = document.getElementById("analyser");
         canvasWidth = canvas.width;
@@ -125,6 +152,7 @@ function updateAnalysers(time) {
 }
 
 function toggleMono() {
+    console.log('toggleMono - CALLED');
     if (audioInput != realAudioInput) {
         audioInput.disconnect();
         realAudioInput.disconnect();
@@ -138,6 +166,7 @@ function toggleMono() {
 }
 
 function gotStream(stream) {
+    console.log('gotStream - CALLED');
     inputPoint = audioContext.createGain();
 
     // Create an AudioNode from the stream.
@@ -161,6 +190,7 @@ function gotStream(stream) {
 }
 
 function initAudio() {
+    console.log('initAudio - CALLED');
         if (!navigator.getUserMedia)
             navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
         if (!navigator.cancelAnimationFrame)
@@ -216,6 +246,8 @@ $(document).on('click touchend', "#record", function(event) {
         console.log('#record - A1');
         $('#analyser_container').hide();
         $('#wavedisplay_container').fadeIn();
+
+        // console.log('recorder exist: ' + typeof(recorder));
     }
 });
 
@@ -232,6 +264,5 @@ function getBufferCallback( buffers ) {
     newSource.start(0);
 }
 
-function play() {
-    // audioRecorder.configure();
-}
+
+// exportWAV("audio/mpeg");
