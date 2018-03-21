@@ -19,7 +19,9 @@
         .btnWrap{display: inline-block; text-align: center; padding-right: 10px;}
         .btn-lg{margin: 0px;}
         .btnText {text-align: center;}
-        /*.centerText {margin-left: 8px;}*/
+        .glyphicons-microphone, .glyphicons-stop, .glyphicons-pause {font-size: 1.5em;}
+        .glyphicons-stop {color: #FFF;}
+        .glyphicons-download-alt:before {position: relative; left: -2px;}
     </style>
 </head>
 <body>
@@ -160,7 +162,8 @@
           var newFileName = 'Optagelse_' + String(1 + document.getElementsByTagName('audio').length)+'_'+d.getDate()+'-'+String(1+d.getMonth())+'-'+d.getFullYear()+'_'+d.getHours()+'.'+d.getMinutes()+'.'+d.getSeconds()+'.ogg';
           link.download = newFileName;
           // link.innerHTML = link.download;
-          link.innerHTML = '<span class="btnWrap btn btn-info glyphicons glyphicons-download-alt"></span>';
+          link.class = 'downloadLink';
+          link.innerHTML = '<span class="download btnWrap btn btn-info glyphicons glyphicons-download-alt"></span>';
 
           var label = document.createElement('div');
           // label.href = url;
