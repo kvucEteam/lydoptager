@@ -16,8 +16,9 @@
         .hidden{display: none;}
         .btn {margin-right: 0px;}
         .glyphicons-pause{color: #de5555;}
-        .btnWrap{display: inline-block; text-align: center;}
-        .btn-lg{margin-top: 0px; margin-bottom: 0px;}
+        .btnWrap{display: inline-block; text-align: center; padding-right: 10px;}
+        .btn-lg{margin: 0px;}
+        .btnText {text-align: center;}
         /*.centerText {margin-left: 8px;}*/
     </style>
 </head>
@@ -50,19 +51,19 @@
       
       <div id="start" class="btnWrap">
         <span class="btn btn-lg btn-primary"> <span class="glyphicons glyphicons-microphone"></span></span>
-        <br>OPTAG
+        <div class="btnText">OPTAG</div>
       </div>
       <div id="pause" class="btnWrap hidden">
         <span class="btn btn-lg btn-info"> <span class="glyphicons glyphicons-pause"></span></span>
-        <br>PAUSE
+        <br><div class="btnText">PAUSE</div>
       </div>
       <div id="resume" class="btnWrap hidden">
         <span class="btn btn-lg btn-primary"> <span class="glyphicons glyphicons-pause"></span></span>
-        <br>PAUSE  <!-- RESUME -->
+        <br><div class="btnText">PAUSE</div>  <!-- RESUME -->
       </div>
       <div id="stopButton" class="btnWrap">
         <span class="btn btn-lg btn-info">  <span class="glyphicons glyphicons-stop"></span></span>
-        <br>STOP
+        <br><div class="btnText">STOP</div>
       </div>
 
       
