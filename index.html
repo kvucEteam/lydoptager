@@ -12,7 +12,13 @@
     <style type='text/css'>
         ul { list-style: none; }
         li { margin: 1em; }
-        audio { /*display: block;*/ display: inline-block;}
+        audio { /*display: block;*/ display: inline-block; width: 80%;}
+        audio::-internal-media-controls-download-button {
+            display: initial;
+        }
+        audio::-webkit-media-controls-enclosure {
+            overflow: initial;
+        }
         .hidden{display: none;}
         .btn {margin-right: 0px;}
         .glyphicons-pause{color: #de5555;}
@@ -22,6 +28,25 @@
         .glyphicons-microphone, .glyphicons-stop, .glyphicons-pause {font-size: 1.5em;}
         .glyphicons-stop {color: #FFF;}
         .glyphicons-download-alt:before {position: relative; left: -2px;}
+        .firefox{background-color: #454545; color: #FFF; padding: 11px 12px 11px 15px; position: relative; top: 0px; border-radius: 0px; left: -5px; border: hidden;}
+        .firefox:hover{background-color: #454545; color: #48A0F7;}
+        .blink {animation: blinker 1s linear infinite;}
+        @keyframes blinker {50% { opacity: 0.0; }}
+        #recordingslist {padding-left: 0px;}
+        #recordingslist li {margin-left: 0px; margin-right: 0px;}
+
+        .instruktion_noLines .glyphicon-arrow-right{display: none;}
+        .instruktion div:nth-child(2) {margin-left: 0px; padding-left: 0px;}
+
+        .defaultCursor{cursor: default !important; background-color: #e7e6e2 !important; border-color: #e7e6e2 !important;}
+        .defaultCursor:hover{background-color: #e7e6e2; border-color: #e7e6e2;}
+
+        #resume .glyphicons-pause{color: #FFF;}
+
+        #btnContainer {width: 170px;}
+        .floatLeft {float: left;}
+        .floatRight {float: right;}
+
     </style>
 </head>
 <body>
@@ -36,38 +61,34 @@
             <button id="init">init recorder with options</button>
         </div>
 
-      <h1>Lydoptager</h1>
+      <h1 id="objTitle">Lydoptager</h1>
+
     <!--   
       <button id="start" disabled>start</button>
       <button id="pause" disabled>pause</button>
       <button id="resume" disabled>resume</button>
       <button id="stopButton" disabled>stop</button>
      -->
-
-     <!-- 
-      <span id="start" class="btn btn-primary">start <span class="glyphicons glyphicons-microphone"></span></span>
-      <span id="pause" class="btn btn-info">pause <span class="glyphicons glyphicons-pause"></span></span>
-      <span id="resume" class="btn btn-primary">resume <span class="glyphicons glyphicons-microphone"></span></span>
-      <span id="stopButton" class="btn btn-info">stop  <span class="glyphicons glyphicons-stop"></span></span>
-     -->
       
-      <div id="start" class="btnWrap">
-        <span class="btn btn-lg btn-primary"> <span class="glyphicons glyphicons-microphone"></span></span>
-        <div class="btnText">OPTAG</div>
+      <div id="btnContainer">
+            <div id="start" class="btnWrap floatLeft">
+              <span class="btn btn-lg btn-primary"> <span class="glyphicons glyphicons-microphone"></span></span>
+              <div class="btnText">OPTAG</div>
+            </div>
+            <div id="pause" class="btnWrap hidden floatLeft">
+              <span class="btn btn-lg btn-primary"> <span class="glyphicons glyphicons-pause blink"></span></span>
+              <br><div class="btnText">PAUSE</div>
+            </div>
+            <div id="resume" class="btnWrap hidden floatLeft">
+              <span class="btn btn-lg btn-primary"> <span class="glyphicons glyphicons-pause"></span></span>
+              <br><div class="btnText">GENOPTAG</div>  <!-- RESUME -->
+            </div>
+            <div id="stopButton" class="btnWrap floatRight">
+              <span class="btn btn-lg btn-info defaultCursor">  <span class="glyphicons glyphicons-stop"></span></span>
+              <br><div class="btnText">STOP</div>
+            </div>
       </div>
-      <div id="pause" class="btnWrap hidden">
-        <span class="btn btn-lg btn-info"> <span class="glyphicons glyphicons-pause"></span></span>
-        <br><div class="btnText">PAUSE</div>
-      </div>
-      <div id="resume" class="btnWrap hidden">
-        <span class="btn btn-lg btn-primary"> <span class="glyphicons glyphicons-pause"></span></span>
-        <br><div class="btnText">PAUSE</div>  <!-- RESUME -->
-      </div>
-      <div id="stopButton" class="btnWrap">
-        <span class="btn btn-lg btn-info">  <span class="glyphicons glyphicons-stop"></span></span>
-        <br><div class="btnText">STOP</div>
-      </div>
-
+      <div class="Clear"></div>
       
       <ul id="recordingslist"></ul>
 
@@ -82,6 +103,11 @@
   <script src="../library/custom_scripts.js"></script>
 
   <script>
+
+    $('#objTitle').after(instruction_noLines('Her kan du optage lydfiler. Du kan sætte optagelsen på pause undervejs. Når du klikker på "stop", kan du downloade din lydfil. (Brug enten <a href="https://www.google.com/chrome/" target="_blank">Chrome</a> eller <a href="https://www.mozilla.org/da/firefox/new/" target="_blank">Firefox.</a>)')+'<div class="Clear"></div>');
+
+
+
     function screenLogger(text, data) {
       log.innerHTML += "\n" + text + " " + (data || '');
     }
@@ -152,7 +178,7 @@
 
           var audio = document.createElement('audio');
           audio.controls = true;
-          // audio.preload = 'auto';
+          // audio.controlsList = 'play volume download';
           audio.src = url;
 
           var link = document.createElement('a');
@@ -162,13 +188,22 @@
           var newFileName = 'Optagelse_' + String(1 + document.getElementsByTagName('audio').length)+'_'+d.getDate()+'-'+String(1+d.getMonth())+'-'+d.getFullYear()+'_'+d.getHours()+'.'+d.getMinutes()+'.'+d.getSeconds()+'.ogg';
           link.download = newFileName;
           // link.innerHTML = link.download;
-          link.class = 'downloadLink';
-          link.innerHTML = '<span class="download btnWrap btn btn-info glyphicons glyphicons-download-alt"></span>';
+          // link.class = 'downloadLink download btnWrap btn btn-info '+((navigator.userAgent.toLowerCase().indexOf('firefox') > -1)?'firefox btn-lg':'');
+          // link.innerHTML = '<span class="download btnWrap btn btn-info glyphicons glyphicons-download-alt"></span>';
+          link.innerHTML = '<span class="download btnWrap btn btn-info glyphicons glyphicons-download-alt '+((navigator.userAgent.toLowerCase().indexOf('firefox') > -1)?'firefox btn-lg':'')+'"></span>';
+          // link.innerHTML = '<span class="glyphicons glyphicons-download-alt"></span>';
+
+          if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+               // Do Firefox-related activities
+          }
 
           var label = document.createElement('div');
           // label.href = url;
           // label.download = fileName;
           label.innerHTML = 'Optagelse ' + String(1 + document.getElementsByTagName('audio').length);
+          // label.class = 'h3';
+          label.classList.add("h4");
+          label.classList.add("xxx");
           // label.innerHTML = label.download;
 
           var li = document.createElement('li');
@@ -185,17 +220,26 @@
         console.log('#start - CLICKED');
         $('#start').toggleClass('hidden');
         $('#pause').toggleClass('hidden');
+        $('#stopButton > .btn').removeClass('defaultCursor');
 
         $('#stopButton .btn').removeClass('btn-info').addClass('btn-primary');
         $('#start').css({display:'inline-block'});  // Dette er nødvendigt, idet der sættes "display: block" på #start fra  
 
-        if (typeof(microhint_start)==='undefined') {
+        if (typeof(microhint_start)==='undefined') {  // Sikre at microhintet kun fremkommer een gang...
+            console.log('#start - A0');
             window.microhint_start = true;
-            $('.microhint_toBeRemoved').fadeOut( "slow", function() {
-                $(this).remove();
+            if ($('.microhint_toBeRemoved').length > 0) {  // Hvis microhintet ved "start" er tilstede...
+                $('.microhint_toBeRemoved').fadeOut( "slow", function() {
+                    console.log('#start - A1');
+                    $(this).remove();
+                    microhint($('#stopButton'), 'Når du klikker på stop, kan <br> du downloade din optagelse<br> som en lydfil.', false, '#000'); 
+                    $('.microhint').addClass('microhint_toBeRemoved');
+                });
+            } else {  // Hvis microhintet ved "start" IKKE er tilstede (brugeren har klikket det væk)...
+                console.log('#start - A2');
                 microhint($('#stopButton'), 'Når du klikker på stop, kan <br> du downloade din optagelse<br> som en lydfil.', false, '#000'); 
                 $('.microhint').addClass('microhint_toBeRemoved');
-            });
+            }
         }
     });
 
@@ -212,19 +256,31 @@
     });
 
     $(document).on('click', "#stopButton", function(event) {
-        console.log('#resume - CLICKED');
+        console.log('#stopButton - CLICKED');
         $('#resume').addClass('hidden');
         $('#start').removeClass('hidden');
         $('#pause').addClass('hidden');
+        $('#stopButton > .btn').addClass('defaultCursor');
 
-        if ((typeof(microhint_stop)==='undefined') && (typeof(microhint_start)!=='undefined')) {
+        if ((typeof(microhint_stop)==='undefined') && (typeof(microhint_start)!=='undefined')) {  // Sikre at microhintet kun fremkommer een gang...
+          console.log('#stopButton - A0');
             window.microhint_stop = true;
-            $('.microhint_toBeRemoved').fadeOut( "slow", function() {
-                $(this).remove();
-                microhint($('.glyphicons-download-alt'), 'Når du klikker på stop, kan <br> du downloade din optagelse<br> som en lydfil.', false, '#000'); 
-                $('.microhint').addClass('microhint_toBeRemoved_last');
-            });
+            if ($('.microhint_toBeRemoved').length > 0) {  // Hvis microhintet ved "stop" er tilstede...
+                $('.microhint_toBeRemoved').fadeOut( "slow", function() {
+                    console.log('#stopButton - A1');
+                    $(this).remove();
+                    microhint($('.glyphicons-download-alt'), 'Hent din optagelse som<br> en lydfil.', false, '#000'); 
+                    $('.microhint').addClass('microhint_toBeRemoved_last');
+                });
+            } else {  // Hvis microhintet ved "stop" IKKE er tilstede (brugeren har klikket det væk)...
+                setTimeout(function(){ 
+                    microhint($('.glyphicons-download-alt'), 'Hent din optagelse som<br> en lydfil.', false, '#000'); 
+                    $('.microhint').addClass('microhint_toBeRemoved_last');
+                }, 400);
+            }
         }
+
+        $('#stopButton .btn').removeClass('btn-primary').addClass('btn-info');
     });
 
     $(document).on('click', ".btnWrap", function(event) {
@@ -242,6 +298,8 @@
         microhint($('#start'), 'Start din optagelse her. <br> Du kan pause <br> optagelsen undervejs.', false, '#000'); 
         $('.microhint').addClass('microhint_toBeRemoved');
     });
+
+
 
   </script>
 </body>
